@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuenta7 — Contabilidad Semanal y Consejos</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-2: #0b1120;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #10b981;
+      --accent-2: #38bdf8;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app {
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #10b981, #0284c7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+    }
+
+    .brand h1 {
+      font-size: 1.55rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: transform 0.12s ease, opacity 0.15s ease, background 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #052e16;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: var(--text);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .grid-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.7rem;
+      font-weight: 700;
+    }
+
+    .status-verde { color: #34d399; }
+    .status-amarillo { color: #fbbf24; }
+    .status-rojo { color: #f87171; }
+
+    .progress-wrap {
+      margin-top: 10px;
+      background: var(--card-2);
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 100%;
+      background: var(--accent);
+      transition: width 0.25s ease, background 0.25s ease;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1.35fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 860px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .panel h2 {
+      font-size: 1.15rem;
+      margin-bottom: 14px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 520px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-2);
+    }
+
+    .budget-box {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .budget-box .field {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .days-bar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .days-bar {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .day-chip {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .day-chip.active {
+      border-color: var(--accent-2);
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    .day-chip .d-name {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .day-chip .d-amt {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .expense-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .expense-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .expense-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .expense-amt {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fca5a5;
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .tip-card {
+      background: var(--card-2);
+      border-left: 4px solid var(--accent-2);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .tip-card.alert-warn {
+      border-left-color: var(--warn);
+    }
+
+    .tip-card.alert-danger {
+      border-left-color: var(--danger);
+    }
+
+    .tip-card.alert-good {
+      border-left-color: var(--accent);
+    }
+
+    .tip-card h3 {
+      font-size: 0.98rem;
+      margin-bottom: 6px;
+    }
+
+    .tip-card p {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 28px 12px;
+      font-size: 0.92rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      z-index: 99;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo-box">K7</div>
+        <div>
+          <h1>Kuenta7</h1>
+          <p>Tu calculadora y bitácora semanal de dinero con consejos de los creadores</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" id="btnCopySummary">Copiar corte semanal</button>
+        <button class="btn-outline" id="btnExportCsv">Exportar CSV</button>
+        <button class="btn-danger" id="btnResetWeek">Reiniciar semana</button>
+      </div>
+    </header>
+
+    <section class="grid-summary">
+      <div class="stat-card">
+        <div class="stat-label">Presupuesto / Ingresos de la semana</div>
+        <div class="stat-value" id="statBudget">$0.00</div>
+        <div class="expense-meta">Base inicial + ingresos extra</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total gastado en la semana</div>
+        <div class="stat-value" id="statSpent">$0.00</div>
+        <div class="expense-meta" id="statCount">0 movimientos registrados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Saldo disponible</div>
+        <div class="stat-value status-verde" id="statRemaining">$0.00</div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Promedio diario gastado</div>
+        <div class="stat-value" id="statAvg">$0.00</div>
+        <div class="expense-meta" id="statTopCat">Sin categoría principal aún</div>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <div class="panel">
+        <h2>1. Presupuesto e Ingresos</h2>
+        <div class="budget-box" style="margin-bottom: 12px;">
+          <div class="field">
+            <label for="budgetInput">Monto base de la semana ($)</label>
+            <input type="number" id="budgetInput" min="0" step="0.01" placeholder="Ej. 1500.00" />
+          </div>
+          <button class="btn-secondary" id="btnSaveBudget">Guardar base</button>
+        </div>
+
+        <div class="budget-box" style="margin-bottom: 22px;">
+          <div class="field">
+            <label for="incomeInput">Sumar ingreso extra ($)</label>
+            <input type="number" id="incomeInput" min="0.01" step="0.01" placeholder="Ej. 250.00" />
+          </div>
+          <button class="btn-outline" id="btnAddIncome">+ Agregar</button>
+        </div>
+
+        <h2>2. Registrar un gasto al momento</h2>
+        <form id="expenseForm">
+          <div class="field">
+            <label for="conceptInput">¿En qué gastaste?</label>
+            <input type="text" id="conceptInput" required placeholder="Ej. Comida, transporte, café, material..." />
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="amountInput">Monto ($)</label>
+              <input type="number" id="amountInput" min="0.01" step="0.01" required placeholder="0.00" />
+            </div>
+            <div class="field">
+              <label for="categoryInput">Categoría</label>
+              <select id="categoryInput">
+                <option value="Comida">🍔 Comida</option>
+                <option value="Transporte">🚌 Transporte</option>
+                <option value="Escuela / Trabajo">📚 Escuela / Trabajo</option>
+                <option value="Ocio / Gustos">🎮 Ocio / Gustos</option>
+                <option value="Salud / Hogar">🏠 Salud / Hogar</option>
+                <option value="Otros">📦 Otros</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="dayInput">Día de la semana</label>
+            <select id="dayInput">
+              <option value="Lunes">Lunes</option>
+              <option value="Martes">Martes</option>
+              <option value="Miércoles">Miércoles</option>
+              <option value="Jueves">Jueves</option>
+              <option value="Viernes">Viernes</option>
+              <option value="Sábado">Sábado</option>
+              <option value="Domingo">Domingo</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-primary" style="width: 100%; padding: 12px;">
+            Registrar gasto en Kuenta7
+          </button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+          <h2 style="margin-bottom: 0;">3. Cuenta por día y movimientos</h2>
+          <button class="btn-outline" id="btnClearFilter" style="padding: 6px 10px; font-size: 0.8rem;">Ver todos los días</button>
+        </div>
+
+        <div class="days-bar" id="daysBar"></div>
+
+        <div class="expense-list" id="expenseList"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>4. Consejos y diagnóstico de los creadores de Kuenta7</h2>
+      <div class="tips-grid" id="tipsGrid"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    const STORAGE_BUDGET = "kuenta7_presupuesto_v1";
+    const STORAGE_EXPENSES = "kuenta7_gastos_v1";
+
+    let budget = parseFloat(localStorage.getItem(STORAGE_BUDGET) || "0");
+    let expenses = JSON.parse(localStorage.getItem(STORAGE_EXPENSES) || "[]");
+    let selectedDayFilter = null;
+
+    const el = {
+      budgetInput: document.getElementById("budgetInput"),
+      incomeInput: document.getElementById("incomeInput"),
+      conceptInput: document.getElementById("conceptInput"),
+      amountInput: document.getElementById("amountInput"),
+      categoryInput: document.getElementById("categoryInput"),
+      dayInput: document.getElementById("dayInput"),
+      expenseForm: document.getElementById("expenseForm"),
+      statBudget: document.getElementById("statBudget"),
+      statSpent: document.getElementById("statSpent"),
+      statRemaining: document.getElementById("statRemaining"),
+      statCount: document.getElementById("statCount"),
+      statAvg: document.getElementById("statAvg"),
+      statTopCat: document.getElementById("statTopCat"),
+      progressBar: document.getElementById("progressBar"),
+      daysBar: document.getElementById("daysBar"),
+      expenseList: document.getElementById("expenseList"),
+      tipsGrid: document.getElementById("tipsGrid"),
+      btnSaveBudget: document.getElementById("btnSaveBudget"),
+      btnAddIncome: document.getElementById("btnAddIncome"),
+      btnClearFilter: document.getElementById("btnClearFilter"),
+      btnCopySummary: document.getElementById("btnCopySummary"),
+      btnExportCsv: document.getElementById("btnExportCsv"),
+      btnResetWeek: document.getElementById("btnResetWeek"),
+      toast: document.getElementById("toast")
+    };
+
+    function showToast(msg) {
+      el.toast.textContent = msg;
+      el.toast.classList.add("show");
+      setTimeout(() => el.toast.classList.remove("show"), 2400);
+    }
+
+    function fmt(num) {
+      return "$" + Number(num || 0).toLocaleString("es-MX", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_BUDGET, String(budget));
+      localStorage.setItem(STORAGE_EXPENSES, JSON.stringify(expenses));
+    }
+
+    function setDefaultToday() {
+      const jsDay = new Date().getDay(); // 0 = Domingo, 1 = Lunes...
+      const mapIdx = jsDay === 0 ? 6 : jsDay - 1;
+      el.dayInput.value = DAYS[mapIdx];
+    }
+
+    function getTotals() {
+      const spent = expenses.reduce((acc, item) => acc + Number(item.amount), 0);
+      const remaining = budget - spent;
+      const pctRemaining = budget > 0 ? (remaining / budget) * 100 : 100;
+
+      const byDay = {};
+      const byCat = {};
+      DAYS.forEach(d => (byDay[d] = 0));
+
+      expenses.forEach(item => {
+        byDay[item.day] = (byDay[item.day] || 0) + Number(item.amount);
+        byCat[item.category] = (byCat[item.category] || 0) + Number(item.amount);
+      });
+
+      let topCategory = null;
+      let topCatAmt = 0;
+      for (const [cat, amt] of Object.entries(byCat)) {
+        if (amt > topCatAmt) {
+          topCatAmt = amt;
+          topCategory = cat;
+        }
+      }
+
+      const activeDaysCount = DAYS.filter(d => byDay[d] > 0).length;
+      const avgDaily = activeDaysCount > 0 ? spent / activeDaysCount : 0;
+
+      return { spent, remaining, pctRemaining, byDay, byCat, topCategory, topCatAmt, avgDaily };
+    }
+
+    function renderSummary(t) {
+      el.statBudget.textContent = fmt(budget);
+      el.statSpent.textContent = fmt(t.spent);
+      el.statRemaining.textContent = fmt(t.remaining);
+      el.statCount.textContent = `${expenses.length} ${expenses.length === 1 ? "movimiento registrado" : "movimientos registrados"}`;
+      el.statAvg.textContent = fmt(t.avgDaily);
+      el.statTopCat.textContent = t.topCategory
+        ? `Mayor gasto: ${t.topCategory} (${fmt(t.topCatAmt)})`
+        : "Sin categoría principal aún";
+
+      el.statRemaining.classList.remove("status-verde", "status-amarillo", "status-rojo");
+      if (budget <= 0) {
+        el.statRemaining.classList.add("status-verde");
+        el.progressBar.style.width = "100%";
+        el.progressBar.style.background = "var(--accent)";
+      } else if (t.pctRemaining > 40) {
+        el.statRemaining.classList.add("status-verde");
+        el.progressBar.style.width = `${Math.max(0, Math.min(100, t.pctRemaining))}%`;
+        el.progressBar.style.background = "var(--accent)";
+      } else if (t.pctRemaining >= 15) {
+        el.statRemaining.classList.add("status-amarillo");
+        el.progressBar.style.width = `${Math.max(0, Math.min(100, t.pctRemaining))}%`;
+        el.progressBar.style.background = "var(--warn)";
+      } else {
+        el.statRemaining.classList.add("status-rojo");
+        el.progressBar.style.width = `${Math.max(0, Math.min(100, t.pctRemaining))}%`;
+        el.progressBar.style.background = "var(--danger)";
+      }
+    }
+
+    function renderDays(t) {
+      el.daysBar.innerHTML = "";
+      DAYS.forEach(day => {
+        const chip = document.createElement("div");
+        chip.className = "day-chip" + (selectedDayFilter === day ? " active" : "");
+        chip.innerHTML = `
+          <div class="d-name">${day.slice(0, 3)}</div>
+          <div class="d-amt">${fmt(t.byDay[day])}</div>
+        `;
+        chip.addEventListener("click", () => {
+          selectedDayFilter = selectedDayFilter === day ? null : day;
+          render();
+        });
+        el.daysBar.appendChild(chip);
+      });
+    }
+
+    function renderExpenses() {
+      const filtered = selectedDayFilter
+        ? expenses.filter(e => e.day === selectedDayFilter)
+        : expenses;
+
+      if (filtered.length === 0) {
+        el.expenseList.innerHTML = `
+          <div class="empty">
+            ${selectedDayFilter
+              ? `No hay gastos registrados en ${selectedDayFilter}.`
+              : "Aún no has registrado gastos esta semana. ¡Empieza anotando el primero!"}
+          </div>
+        `;
+        return;
+      }
+
+      el.expenseList.innerHTML = "";
+      [...filtered].reverse().forEach(item => {
+        const row = document.createElement("div");
+        row.className = "expense-item";
+        row.innerHTML = `
+          <div>
+            <strong>${escapeHtml(item.concept)}</strong>
+            <div class="expense-meta">${item.day} • ${escapeHtml(item.category)}</div>
+          </div>
+          <div class="expense-right">
+            <span class="expense-amt">-${fmt(item.amount)}</span>
+            <button class="btn-danger" style="padding: 6px 10px; font-size: 0.78rem;" onclick="deleteExpense('${item.id}')">Borrar</button>
+          </div>
+        `;
+        el.expenseList.appendChild(row);
+      });
+    }
+
+    function renderTips(t) {
+      const tips = [];
+
+      if (budget <= 0) {
+        tips.push({
+          cls: "alert-warn",
+          title: "Define tu punto de partida",
+          text: "Aún no fijas un presupuesto semanal. Escribe cuánto dinero tienes disponible para los 7 días y guarda la base para que Kuenta7 mida tu margen real."
+        });
+      } else if (t.remaining < 0) {
+        tips.push({
+          cls: "alert-danger",
+          title: "Te pasaste del presupuesto semanal",
+          text: `Llevas ${fmt(Math.abs(t.remaining))} por encima de tu base. Revisa qué compras fueron impulsivas y separa un tope mínimo diario para cerrar la semana.`
+        });
+      } else if (t.pctRemaining < 15) {
+        tips.push({
+          cls: "alert-danger",
+          title: "Alerta crítica de saldo (<15%)",
+          text: `Solo te queda el ${t.pctRemaining.toFixed(1)}% de tu dinero semanal. Evita gastos no esenciales y prioriza únicamente lo indispensable.`
+        });
+      } else if (t.pctRemaining <= 40) {
+        tips.push({
+          cls: "alert-warn",
+          title: "Ritmo moderado (15%–40% restante)",
+          text: `Conservas el ${t.pctRemaining.toFixed(1)}% de tu presupuesto. Es buen momento para frenar compras pequeñas repetitivas y cuidar los últimos días.`
+        });
+      } else {
+        tips.push({
+          cls: "alert-good",
+          title: "Buen control del saldo (>40% restante)",
+          text: `Mantienes un margen saludable (${t.pctRemaining.toFixed(1)}% libre). Si logras terminar la semana con sobrante, aparta una parte como ahorro o colchón.`
+        });
+      }
+
+      if (t.topCategory) {
+        const share = t.spent > 0 ? ((t.topCatAmt / t.spent) * 100).toFixed(0) : 0;
+        tips.push({
+          cls: "",
+          title: `Foco en ${t.topCategory}`,
+          text: `Esta categoría representa el ${share}% de lo que has gastado (${fmt(t.topCatAmt)}). Pregúntate si puedes reducir su frecuencia sin afectar tu rutina.`
+        });
+      } else {
+        tips.push({
+          cls: "",
+          title: "Regla de los creadores: anota al instante",
+          text: "Los pequeños gastos diarios son los que más se olvidan. Registrar cada compra en el momento hace que el corte del domingo sea exacto y sin sorpresas."
+        });
+      }
+
+      tips.push({
+        cls: "alert-good",
+        title: "Cierre de semana con propósito",
+        text: "Al llegar el domingo, copia tu corte semanal o expórtalo en CSV para comparar tus semanas y detectar patrones que puedas mejorar."
+      });
+
+      el.tipsGrid.innerHTML = tips.map(tip => `
+        <div class="tip-card ${tip.cls}">
+          <h3>${escapeHtml(tip.title)}</h3>
+          <p>${escapeHtml(tip.text)}</p>
+        </div>
+      `).join("");
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function render() {
+      const t = getTotals();
+      el.budgetInput.value = budget > 0 ? budget : "";
+      renderSummary(t);
+      renderDays(t);
+      renderExpenses();
+      renderTips(t);
+    }
+
+    window.deleteExpense = function(id) {
+      expenses = expenses.filter(item => item.id !== id);
+      saveState();
+      render();
+      showToast("Gasto eliminado");
+    };
+
+    el.btnSaveBudget.addEventListener("click", () => {
+      const val = parseFloat(el.budgetInput.value);
+      if (isNaN(val) || val < 0) {
+        showToast("Ingresa un monto válido (0 o mayor)");
+        return;
+      }
+      budget = val;
+      saveState();
+      render();
+      showToast("Presupuesto semanal guardado");
+    });
+
+    el.btnAddIncome.addEventListener("click", () => {
+      const inc = parseFloat(el.incomeInput.value);
+      if (isNaN(inc) || inc <= 0) {
+        showToast("Ingresa un ingreso mayor a 0");
+        return;
+      }
+      budget += inc;
+      el.incomeInput.value = "";
+      saveState();
+      render();
+      showToast(`Se sumaron ${fmt(inc)} a tu semana`);
+    });
+
+    el.expenseForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const concept = el.conceptInput.value.trim();
+      const amount = parseFloat(el.amountInput.value);
+      const category = el.categoryInput.value;
+      const day = el.dayInput.value;
+
+      if (!concept || isNaN(amount) || amount <= 0) {
+        showToast("Completa el concepto y un monto válido");
+        return;
+      }
+
+      expenses.push({
+        id: String(Date.now()) + "_" + Math.random().toString(36).slice(2, 6),
+        concept,
+        amount,
+        category,
+        day
+      });
+
+      el.conceptInput.value = "";
+      el.amountInput.value = "";
+      saveState();
+      render();
+      showToast("Gasto agregado a Kuenta7");
+    });
+
+    el.btnClearFilter.addEventListener("click", () => {
+      selectedDayFilter = null;
+      render();
+    });
+
+    el.btnCopySummary.addEventListener("click", () => {
+      const t = getTotals();
+      const lines = [
+        "📊 CORTE SEMANAL — KUENTA7",
+        `Presupuesto / Ingresos: ${fmt(budget)}`,
+        `Total gastado: ${fmt(t.spent)}`,
+        `Saldo disponible: ${fmt(t.remaining)}`,
+        `Movimientos: ${expenses.length}`,
+        "",
+        "Por día:",
+        ...DAYS.map(d => `- ${d}: ${fmt(t.byDay[d])}`)
+      ];
+      navigator.clipboard.writeText(lines.join("
+"))
+        .then(() => showToast("Corte semanal copiado al portapapeles"))
+        .catch(() => showToast("No se pudo copiar automáticamente"));
+    });
+
+    el.btnExportCsv.addEventListener("click", () => {
+      if (expenses.length === 0) {
+        showToast("No hay gastos para exportar");
+        return;
+      }
+      const rows = [
+        ["Dia", "Categoria", "Concepto", "Monto"],
+        ...expenses.map(e => [e.day, e.category, `"${e.concept.replace(/"/g, '""')}"`, e.amount])
+      ];
+      const csvContent = rows.map(r => r.join(",")).join("
+");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "kuenta7_semana.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Archivo CSV descargado");
+    });
+
+    el.btnResetWeek.addEventListener("click", () => {
+      if (expenses.length === 0 && budget === 0) return;
+      if (confirm("¿Seguro que quieres reiniciar los gastos de esta semana?")) {
+        expenses = [];
+        saveState();
+        render();
+        showToast("Semana reiniciada");
+      }
+    });
+
+    setDefaultToday();
+    render();
+  </script>
+</body>
+</html>
